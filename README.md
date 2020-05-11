@@ -17,7 +17,7 @@ This is a simple JavaScript starter repo template for setting up your project. T
 
 ## Why
 
-Talk about what problem this solves, what SDG(s) and SGD targets it addresses and why these are imoirtant
+Talk about what problem this solves, what SDG(s) and SGD targets it addresses and why these are important
 
 ## Usage
  How would someone use what you have built, include URLs to the deployed app, service e.t.c when you have it setup
@@ -25,11 +25,13 @@ Talk about what problem this solves, what SDG(s) and SGD targets it addresses an
 
 ## Setup
 
-Install `npm` or `yarn` if you dont have any of them already installed. We recommend Yarn though.
+Install `npm` or `yarn` if you don't have any of them already installed. We recommend NPM though.
 
-After clonning the repo to your local machine and moving into the cloned folder, Run `yarn install` to get started by installing dependencies. 
+After clonning the repo to your local machine and moving into the cloned folder, Run `npm install` to get started by installing dependencies. 
 
 `src/index.js` is the entry to the project and source code should go into the `src` folder.
+
+To start the development server run `npm run dev` or `yarn dev` . Note that production server can be started at `npm run start`
 
 All tests should be written in the `__tests__' folder. There's a sample in there.
 
