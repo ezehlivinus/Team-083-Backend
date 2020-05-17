@@ -1,7 +1,6 @@
 const winston = require('winston');
 require('winston-mongodb');
 require('express-async-errors');
-require('dotenv').config();
 
 const exceptRejectLogger = () => {
   // uncaught Exception
