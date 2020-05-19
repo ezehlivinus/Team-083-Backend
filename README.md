@@ -1,11 +1,15 @@
-Team-083 SMEFund Project  
+barebones setup for JavaScript / Node projects replace this with a one-liner phrase describing this project or app
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/86297dae5eae49a2a9f1a01809f4d784)](https://app.codacy.com/gh/BuildForSDG/Team-083-Backend?utm_source=github.com&utm_medium=referral&utm_content=BuildForSDG/Team-083-Backend&utm_campaign=Badge_Grade_Settings)
+[![Codacy Badge](https://img.shields.io/badge/Code%20Quality-D-red)](https://img.shields.io/badge/Code%20Quality-D-red)
 
 
 ## About
 
-SMEFund is a software system that enables SMEs to access funds from Funders. The goal of this app is to create an easy way these SMEs can have access to fund, manage and report their activities to these Funders who funded them. 
+What is this project about. Ok to enrich here or the section above it with an image. 
+
+Once this repo has been setup on Codacy by the TTL, replace the above badge with the actual one from the Codacy dashboard, and add the code coverage badge as well. This is mandatory
+
+This is a simple JavaScript starter repo template for setting up your project. The setup contains
 
 - Jest: For runnung tests. We strongly recommend that JavaScript projects use Jest
 
@@ -13,7 +17,7 @@ SMEFund is a software system that enables SMEs to access funds from Funders. The
 
 ## Why
 
-This is a project management system restricted between SMEs and Funders. This has been implemented under the guidance and powered by #BuildForSDG from Facebook Developer Circle and Andela. This system is useful for SMEs as well as the following kinds of Funders: Investors, NGOs, Government and its agencies, and philanthropists.
+Talk about what problem this solves, what SDG(s) and SGD targets it addresses and why these are important
 
 ## Usage
  How would someone use what you have built, include URLs to the deployed app, service e.t.c when you have it setup
@@ -43,11 +47,8 @@ This starter uses [Parcel](https://parceljs.org/getting_started.html) as the bun
 - Run your app in local dev mode: `yarn start`. This puts the bundled app in a `dist` folder, set up a local web server at localhost:1234, and continues to watch for your code changes which it syncs with the local server. This means if you loaded the app in a browser, it will auto-refresh as you code along. Feel free to use whatever bundler best meets your needs. Parcel was only added as a sample and for those looking for a simple but effective solution to the hassle of bundlers. 
 
 ## Authors
-1. Oluwamayowa Fadairo	Backend	@OluwmayowaF
-2. Hammed Olalekan Osanyinpeju Fullstack @Successtar
-3. Ezeh Livinus Backend @ezehlivinus
-4. Chukwujama Osinachi Frontend @vicradon
-5. Adeyeye Muiz Olayinka	Frontend	@princeadeyeye
+
+List the team behind this project. Their names linked to their Github, LinkedIn, or Twitter accounts should siffice. Ok to signify the role they play in the project, including the TTL and mentor
 
 ## Contributing
 If this project sounds interesting to you and you'd like to contribute, thank you!

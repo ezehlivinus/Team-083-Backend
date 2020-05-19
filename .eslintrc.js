@@ -17,6 +17,7 @@ module.exports = {
   rules: {
     'comma-dangle': ['error', 'never'],
     'no-param-reassign': ['error', { props: false }],
-    'linebreak-style': ["error", "windows"]
+    'linebreak-style': ["error", "windows"],
+    'no-underscore-dangle': ["error", { "allowAfterThis": true }]
   }
 };

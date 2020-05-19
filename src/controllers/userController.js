@@ -1,209 +1,153 @@
-const User = require('../models/User');
-const UserProfile = require('../models/UserProfile');
+/* eslint-disable no-underscore-dangle */
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const uuid = require('uuidv1');
+const _ = require('lodash');
+const moment = require('moment');
+const { User } = require('../models/user');
+const UserType = require('../models/userType');
+
+/**
+ * Fetch a single user
+ * GET: auth/users/:id
+ */
+exports.userDetail = async (req, res) => {
+  try {
+    User.findById(req.params.id, (err, user) => {
+      if (err) return res.status(500).send({ status: 'error', message: err.message });
+      if (!user) return res.status(404).send({ status: 'error', message: 'No user found' });
+
+      res.status(200).send({ status: 'Success', data: user });
+    })
+      .select('-password -__v');
+  } catch (error) {
+    res.status(500).send({ status: 'error', message: error.message });
+  }
+};
 
 
-/** New SME or Funder Signup **/
+/**
+ * This fetch all users
+ * GET: auth/users
+ */
+exports.userList = async (req, res) => {
+  /**
+   * @param none
+   * @return {user} : a user object
+   */
+  const users = await User.find().select('-password -__v');
 
-const signup = (req, res) => {
-
-  /* Admin Account can't be created via signup, only SME and Funder account */
-
-  if (req.body.userType && req.body.userType.toUpperCase() == 'ADMIN'){
-
-    return res.status(400).json({
-                                  status: 'error',
-
-                                  message: 'Invalid user type'
-                                });
-
+  if (_.isEmpty(users)) {
+    return res.status(404).send({ status: 'error', message: 'No user found' });
   }
 
-  const passwordHash = (req.body.password && req.body.password.length >= 8) ? bcrypt.hashSync(req.body.password, 10) : '';
-
-  const user = new User({
-                          _id: uuid(),
-
-                          name: req.body.name,
-                          
-                          email: req.body.email,
-                          
-                          password: passwordHash,
-                          
-                          userType: req.body.userType
-                        });
-
-  user.save().then(({_id, name, email, status, userType}) => {
-
-                            const data = { _id, name, email, status, userType};
-
-                            /* Generate User Token */
-      
-                            const token = jwt.sign(data, process.env.jwtKey, { algorithm: 'HS256', expiresIn: '24h'});
-
-                            /* Create row in the user profile collection for the account */
-
-                            new UserProfile({userId: _id}).save();
-
-                            return res.status(200).json({
-                                                          status: 'success',
-                                      
-                                                          message: 'Account created Successfully',
-
-                                                          data: {token, ...data}
-                                                        });
-                          }
-              ).catch(error => {
-                  
-                  return res.status(400).json({
-                                                status: 'error',
-
-                                                message: error.code === 11000 ? 'Email Already in use' : error.message
-                                            });
-              });
-}
+  res.status(200).send({ status: 'Success', data: users });
+};
 
 
+/**
+ * Create a user
+ * POST: auth/user
+ */
+exports.createUser = async (req, res) => {
+  /**
+   * @return {user} the created user and payload
+   */
 
-/** ADMIN, SME or Funder Login **/
+  // validate user data and return error message if any
 
-const login = (req, res) => {
+  // Check if user already registered, return message if true
+  let user = await User.findOne({ email: req.body.email });
+  if (user) return res.status(400).send({ status: 'error', message: 'User already registered' });
 
-  let { email, password } = req.body;
+  // Try registering the user
+  try {
+    user = new User(_.pick(req.body, ['name', 'email', 'password']));
 
-  if (typeof(email) == "undefined" || typeof(password) == "undefined"){
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
 
-    return res.status(403).json({
-                                  status: "error",
-                                
-                                  message : "Enter your email and password"
+    // upon registration all user are of type user
+    const userType = await UserType.find({ name: 'user' }).populate('userType');
+    user.userType = userType.map((type) => type._id);
 
-                                });
+    await user.save();
 
+    const token = user.generateAuthToken();
+    user = _.omit(user._doc, ['password', '__v']);
+
+    res.header('token', token).status(201).send({
+      status: 'success',
+      data: _.merge(user, { token })
+    });
+  } catch (error) {
+    res.send(error.message);
   }
-
-  User.find({email: email, status: 'ACTIVE'})
-
-            .then( user => {
-              
-              if (user.length == 0){
-
-                return res.status(403).json({
-                                              status: "error",
-                                            
-                                              message : "Account does not exist"
-          
-                                            });
-          
-          
-              }
-              else if (!bcrypt.compareSync(password, user[0].password)){
-          
-                return res.status(403).json({
-                                              status: "error",
-                                            
-                                              message : "Incorrect email or password"
-          
-                                            });
-              }
-              else{
-
-                /* Extract desired user data */
-
-                let {_id, name, email, status, userType} = user[0];
-          
-                const data = {_id, name, email, status, userType};
-          
-                const token = jwt.sign(data, process.env.jwtKey, { algorithm: 'HS256', expiresIn: '24h'});
-          
-                return res.status(200).json({
-                                              status: 'success',
-
-                                              message: 'login Successfully',
-                                              
-                                              data : {token, ...data}
-                                            });
-
-              }
-            })
-
-            .catch(error => {
-                  
-                return res.status(400).json({
-                                              status: 'error',
-
-                                              message:  error.message
-                                          });
-            })
-
-}
+};
 
 
+/**
+ * Update user
+ * PUT: /users/:id
+ */
+exports.updateUser = async (req, res) => {
+  /**
+   * @param id
+   * @return {user}
+   */
 
-/** ADMIN, SME or Funder Account Details **/
+  // TO BE DONE LATER: validate request body, show error if any
 
-const account = (req, res) => {
+  try {
+    // This does not currently handle password/change, a different handler be used for this
 
-  /* Join query on users and userprofiles collections */
+    // when email is same as previous unique db error: check if email exist
+    const emailExist = await User.findOne({ email: req.body.email });
 
-  User.aggregate([
-                  {
-                    $match:{
-                              "_id": req.userData._id
-                            }
-                  },
-                  {
-                    $lookup: {
-                                from: "userprofiles", // collection name in db
-                                
-                                localField: "_id",
-                                
-                                foreignField: "userId",
-                                
-                                as: "detail"
-                            }
-                  }
-                ]).exec(function(error, user) {
+    if (emailExist) {
+      await User.findByIdAndUpdate(req.params.id, {
+        name: req.body.name
+      }, { new: true }, async (error, user) => {
+        if (error) return res.status(404).send('User not found');
 
-                  if (error || user.length == 0){
+        user.updatedAt = moment().format();
+        await user.save();
 
-                    return res.status(500).json({ 
-                                                  status: "error",
-                                                  
-                                                  data : error ? error.message : 'Something went wrong'
+        res.status(200).send({ status: 'success', data: user });
+      })
+        .select('-password -__v');
+    } else {
+      await User.findByIdAndUpdate(req.params.id, {
+        email: req.body.email,
+        name: req.body.name
+      }, { new: true }, async (error, user) => {
+        if (error) return res.status(404).send('User not found');
 
-                                                });
-                  }
-                  else{
+        user.updatedAt = moment().format();
+        await user.save();
 
-                    /* Extract desired User Data */
-
-                    const {_id, name, email, userType, status, avatar, bio, phone, address, updatedAt, createdAt } = {...user[0], ...user[0].detail[0]};
-
-                    const data = {_id, name, email, userType, status, avatar, bio, phone, address, updatedAt, createdAt };
-
-
-                    return res.status(200).json({
-                                                  status: 'success',
-
-                                                  message: 'Account Details Fetched Successfully',
-
-                                                  data: data
-                                                  
-                                                });
+        res.status(200).send({ status: 'success', data: user });
+      })
+        .select('-password -__v');
+    }
+  } catch (error) {
+    res.send(error.message);
+  }
+};
 
 
-                  }
-                });
-
-}
-
-module.exports = {
-                    signup,
-                    
-                    login,
-
-                    account
-                };
+/**
+ * Delete the user with the id
+ * DELETE: auth/user/:id
+ */
+exports.destroyUser = async (req, res) => {
+  /**
+   * @param {id} user's id
+   * @return {} user
+   */
+  try {
+    const user = await User.findByIdAndRemove(req.params.id).select('-password -__v');
+    if (!user) return res.status(404).send('User not found');
+    res.status(200).send({ status: 'Success', data: user });
+  } catch (error) {
+    res.send(error.message);
+  }
+};
