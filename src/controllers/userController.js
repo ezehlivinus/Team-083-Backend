@@ -60,13 +60,13 @@ exports.createUser = async (req, res) => {
 
   // Try registering the user
   try {
-    user = new User(_.pick(req.body, ['name', 'email', 'password']));
+    user = new User(_.pick(req.body, ['name', 'email', 'password'])).populate('userType');
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
 
     // upon registration all user are of type user
-    const userType = await UserType.find({ name: 'user' }).populate('userType');
+    const userType = await UserType.find({ name: 'user' });
     user.userType = userType.map((type) => type._id);
 
     await user.save();
