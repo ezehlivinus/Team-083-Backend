@@ -136,7 +136,7 @@ exports.updateUser = async (req, res) => {
 
 /**
  * Delete the user with the id
- * DELETE: auth/user/:id
+ * DELETE: auth/users/:id
  */
 exports.destroyUser = async (req, res) => {
   /**
@@ -147,6 +147,41 @@ exports.destroyUser = async (req, res) => {
     const user = await User.findByIdAndRemove(req.params.id).select('-password -__v');
     if (!user) return res.status(404).send('User not found');
     res.status(200).send({ status: 'Success', data: user });
+  } catch (error) {
+    res.send(error.message);
+  }
+};
+
+/**
+ * Login user
+ * post: auth/users/login
+ */
+
+exports.loginUser = async (req, res) => {
+  /**
+   * authenticate a user and return token
+   */
+
+  try {
+    // check if user exist
+    let user = await User.findOne({
+      email: req.body.email
+    }).select('-__v')
+      .populate('userType', '-__v');
+
+    if (_.isEmpty(user)) return res.status(400).send({ status: 'error', message: 'Invalid email  or password' });
+
+    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    if (!validPassword) return res.status(400).send({ status: 'error', message: 'Invalid password or email' });
+
+    const token = user.generateAuthToken();
+
+    user = _.omit(user._doc, ['password', '__v']);
+
+    res.header('token', token).status(201).send({
+      status: 'success',
+      data: _.merge(user, { token })
+    });
   } catch (error) {
     res.send(error.message);
   }
