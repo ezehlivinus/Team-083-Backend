@@ -72,7 +72,6 @@ exports.createUser = async (req, res) => {
     await user.save();
 
     const token = user.generateAuthToken();
-    user = _.omit(user._doc, ['password', '__v']);
 
     res.header('token', token).status(201).send({
       status: 'success',
@@ -134,15 +133,9 @@ exports.updateUser = async (req, res) => {
 };
 
 
-/**
- * Delete the user with the id
- * DELETE: auth/users/:id
- */
+// Delete a user
 exports.destroyUser = async (req, res) => {
-  /**
-   * @param {id} user's id
-   * @return {} user
-   */
+
   try {
     const user = await User.findByIdAndRemove(req.params.id).select('-password -__v');
     if (!user) return res.status(404).send('User not found');
@@ -152,15 +145,8 @@ exports.destroyUser = async (req, res) => {
   }
 };
 
-/**
- * Login user
- * post: auth/users/login
- */
-
+// Login a user
 exports.loginUser = async (req, res) => {
-  /**
-   * authenticate a user and return token
-   */
 
   try {
     // check if user exist

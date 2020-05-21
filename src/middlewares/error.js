@@ -1,5 +1,5 @@
 const { logger } = require('../startups/logging');
-// handles middleware error
+// handles middleware error and those that may occur in controller
 module.exports = (error, req, res, next) => {
   logger.error(error.message, error);
 
