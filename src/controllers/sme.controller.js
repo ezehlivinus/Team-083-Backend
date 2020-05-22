@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const _ = require('lodash');
-const { Sme } = require('../models/smes/sme');
+const { Sme } = require('../models/smes/sme.model');
+const { User } = require('../models/user.model');
 
 
 // NOTE to define if a user has right to view detail/list smes
@@ -41,8 +42,20 @@ exports.createSme = async (req, res) => {
     });
   }
 
-  // these should not be set by users, except founders which will be treated later
+  // validate user: for deleted users or (expired token: handle at middleware)
+  const user = await User.findById(req.user._id);
+
+  const message = {
+    status: 'error',
+    message: 'Bad request',
+    hint: 'Try login-out and login again'
+  };
+
+  if (!user) return res.status(400).send(message);
+
+  // these should not be set by users, except by admin/founders which will be treated later
   const sme = new Sme(_.omit(req.body, ['isVerified', 'isSuspended', 'founders']));
+
   sme.founders.push(req.user._id);
 
   await sme.save();

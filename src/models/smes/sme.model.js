@@ -17,7 +17,7 @@ const smeSchema = new mongoose.Schema({
       ref: 'User'
     }
   ],
-  ask: { type: Number, min: 1 },
+  ask: { type: Number, required: true, default: 0 },
   // RC (may be means: Registered Company), is a business registration number
   rc: { type: Number, required: true, unique: true },
   isSuspended: {
