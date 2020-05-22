@@ -17,6 +17,7 @@ const smeSchema = new mongoose.Schema({
       ref: 'User'
     }
   ],
+  ask: { type: Number, min: 1 },
   // RC (may be means: Registered Company), is a business registration number
   rc: { type: Number, required: true, unique: true },
   isSuspended: {
@@ -49,7 +50,7 @@ const Sme = mongoose.model('Sme', smeSchema);
 
 exports.Sme = Sme;
 
-// adding new founders' logic that would be moved to or called in this model's controller.updateSme 
+// adding new founders' logic that would be moved to or called in this model's controller.updateSme
 
 // for new  founders (co-founder)
 // if new founder was added on the request

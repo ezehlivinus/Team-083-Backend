@@ -1,7 +1,7 @@
 const express = require('express');
 const error = require('../middlewares/error');
 
-const users = require('../routes/users');
+const users = require('../routes/users.route');
 const smes = require('../routes/smes');
 
 const basePath = '/api/v1';
