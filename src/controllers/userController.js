@@ -5,10 +5,7 @@ const moment = require('moment');
 const { User } = require('../models/user');
 const UserType = require('../models/userType');
 
-/**
- * Fetch a single user
- * GET: auth/users/:id
- */
+
 exports.userDetail = async (req, res) => {
   try {
     User.findById(req.params.id, (err, user) => {
@@ -24,15 +21,8 @@ exports.userDetail = async (req, res) => {
 };
 
 
-/**
- * This fetch all users
- * GET: auth/users
- */
 exports.userList = async (req, res) => {
-  /**
-   * @param none
-   * @return {user} : a user object
-   */
+
   const users = await User.find().select('-password -__v');
 
   if (_.isEmpty(users)) {
@@ -43,14 +33,7 @@ exports.userList = async (req, res) => {
 };
 
 
-/**
- * Create a user
- * POST: auth/user
- */
 exports.createUser = async (req, res) => {
-  /**
-   * @return {user} the created user and payload
-   */
 
   // validate user data and return error message if any
 
@@ -72,7 +55,6 @@ exports.createUser = async (req, res) => {
     await user.save();
 
     const token = user.generateAuthToken();
-    user = _.omit(user._doc, ['password', '__v']);
 
     res.header('token', token).status(201).send({
       status: 'success',
@@ -84,16 +66,7 @@ exports.createUser = async (req, res) => {
 };
 
 
-/**
- * Update user
- * PUT: /users/:id
- */
 exports.updateUser = async (req, res) => {
-  /**
-   * @param id
-   * @return {user}
-   */
-
   // TO BE DONE LATER: validate request body, show error if any
 
   try {
@@ -134,15 +107,8 @@ exports.updateUser = async (req, res) => {
 };
 
 
-/**
- * Delete the user with the id
- * DELETE: auth/users/:id
- */
+// Delete a user
 exports.destroyUser = async (req, res) => {
-  /**
-   * @param {id} user's id
-   * @return {} user
-   */
   try {
     const user = await User.findByIdAndRemove(req.params.id).select('-password -__v');
     if (!user) return res.status(404).send('User not found');
@@ -152,22 +118,11 @@ exports.destroyUser = async (req, res) => {
   }
 };
 
-/**
- * Login user
- * post: auth/users/login
- */
-
+// Login a user
 exports.loginUser = async (req, res) => {
-  /**
-   * authenticate a user and return token
-   */
-
   try {
     // check if user exist
-    let user = await User.findOne({
-      email: req.body.email
-    }).select('-__v')
-      .populate('userType', '-__v');
+    const user = await User.findOne({ email: req.body.email }).populate('userType', '-__v');
 
     if (_.isEmpty(user)) return res.status(400).send({ status: 'error', message: 'Invalid email  or password' });
 
@@ -175,8 +130,6 @@ exports.loginUser = async (req, res) => {
     if (!validPassword) return res.status(400).send({ status: 'error', message: 'Invalid password or email' });
 
     const token = user.generateAuthToken();
-
-    user = _.omit(user._doc, ['password', '__v']);
 
     res.header('token', token).status(201).send({
       status: 'success',

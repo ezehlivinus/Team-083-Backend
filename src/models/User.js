@@ -44,6 +44,14 @@ userSchema.methods.generateAuthToken = function t() {
   return token;
 };
 
+// Tells which user properties that are included when converting MongoDB records to 
+// JSON objects which are returned in API responses
+userSchema.set('toJSON', {
+  versionKey: false, // excludes the __v
+  transform(doc, ret) {
+    delete ret.password; // remove password
+  }
+});
 
 const User = mongoose.model('User', userSchema);
 
