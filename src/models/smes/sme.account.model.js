@@ -9,10 +9,6 @@ const smeAccountSchema = new mongoose.Schema({
   },
   total: {
     type: String, required: true, minlength: 10, maxlength: 200
-  },
-  funder: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
   }
 
 }, { timestamps: { currentTime: () => moment().format() } });
