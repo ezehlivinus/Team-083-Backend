@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const authenticate = require('../middlewares/authenticate');
 const authorise = require('../middlewares/authorise');
-const controller = require('../controllers/userController');
+const controller = require('../controllers/user.controller');
 
 /**
  * Define user routes

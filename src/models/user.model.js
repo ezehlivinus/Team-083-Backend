@@ -1,6 +1,7 @@
 // Model: User, describes a user
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const moment = require('moment');
 const Joi = require('@hapi/joi');
 
 
@@ -21,7 +22,11 @@ const userSchema = new mongoose.Schema({
     type: String, required: true, minlength: 3, maxlength: 40
   },
   email: {
-    type: String, required: true, unique: true
+    type: String,
+    required: true,
+    lowercase: true,
+    unique: true,
+    trim: true
   },
   password: {
     type: String,
@@ -30,12 +35,14 @@ const userSchema = new mongoose.Schema({
     maxlength: 1024
   },
   userType: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'UserType'
-  },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
+    type: String,
+    lowercase: true,
+    enum: ['user', 'founder', 'funder', 'admin'],
+    required: true,
+    default: 'user'
+  }
+
+}, { timestamps: { currentTime: () => moment().format() } });
 
 userSchema.methods.generateAuthToken = function t() {
   const token = jwt.sign(
@@ -44,7 +51,7 @@ userSchema.methods.generateAuthToken = function t() {
   return token;
 };
 
-// Tells which user properties that are included when converting MongoDB records to 
+// Tells which user properties that are included when converting MongoDB records to
 // JSON objects which are returned in API responses
 userSchema.set('toJSON', {
   versionKey: false, // excludes the __v
