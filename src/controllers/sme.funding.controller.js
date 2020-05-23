@@ -61,6 +61,12 @@ exports.createFunding = async (req, res) => {
 
   await funding.save();
 
+  // change user type to funder
+  if (funder.userType !== 'funder') {
+    funder.userType = 'funder';
+    await funder.save();
+  }
+
   res.status(201).send({ status: 'success', data: funding });
 };
 
