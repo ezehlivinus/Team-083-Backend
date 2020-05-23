@@ -51,7 +51,7 @@ exports.createInterest = async (req, res) => {
 };
 
 // Delete an sme:
-// It also use to indicate that a funder is nolonger  unterested any this feature will be changed moved later
+// It also use to indicate that a funder is no longer  interested any this feature will be changed moved later
 exports.destroyInterest = async (req, res) => {
   // check if the funder is deleting the sme he funded
 
@@ -60,5 +60,5 @@ exports.destroyInterest = async (req, res) => {
 
 
 exports.updateInterest = async (req, res) => {
-  // to be done
+  // to be done later
 };
