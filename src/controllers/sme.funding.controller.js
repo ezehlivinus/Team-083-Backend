@@ -56,7 +56,8 @@ exports.createFunding = async (req, res) => {
     funder: funder._id,
     capital: req.body.capital,
     origin: req.body.origin,
-    _type: req.body._type
+    _type: req.body._type,
+    balance: req.body.capital
   });
 
   await funding.save();
@@ -102,7 +103,8 @@ exports.updateFunding = async (req, res) => {
     funder: funder._id,
     capital: req.body.capital,
     origin: req.body.origin,
-    _type: req.body._type
+    _type: req.body._type,
+    balance: req.body.capital // this may override previous balance if any
   },
   { new: true, useFindAndModify: false }, async (error, funding) => {
     if (error) return res.status(404).send(error);

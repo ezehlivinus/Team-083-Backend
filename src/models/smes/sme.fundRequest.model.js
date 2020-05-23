@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 
+// field 'status': pending or rejected, or approved ...will be added in the future
 
 // fundRequest schema
 const fundRequestSchema = new mongoose.Schema({
@@ -14,7 +15,9 @@ const fundRequestSchema = new mongoose.Schema({
   description: {
     type: String, minlength: 10, maxlength: 300
   },
-  amount: { type: Number, required: true, default: 0 }
+  amount: {
+    type: Number, required: true, min: 1, default: 0
+  }
 }, { timestamps: { currentTime: () => moment().format() } });
 
 // Tells which sme properties that are included when converting MongoDB records to

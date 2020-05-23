@@ -4,10 +4,11 @@ const router = express.Router();
 const authenticate = require('../middlewares/authenticate');
 const controller = require('../controllers/sme.controller');
 
-const fInterestController = require('../controllers/funder/interest.controller')
+const fInterestController = require('../controllers/funder/interest.controller');
 
 const fundingController = require('../controllers/sme.funding.controller');
 
+const fundRequestController = require('../controllers/sme.fundRequest.controller');
 
 /**
  * Define sme routes, funder-interest routes
@@ -35,7 +36,7 @@ router.put('/:id', [authenticate], controller.updateSme);
 /**
  * FUNDER INTEREST ROUTES
  * fullPath: api/v1/smes/smeId/interests
- * 
+ *
  * There will a be a middleware that will:
  * 1. Only allow founders to view their own interests
  * 2. Only allow funders to view their all their interest
@@ -67,5 +68,18 @@ router.get(`${fundingPath}`, [authenticate], fundingController.fundingList);
 router.post(fundingPath, [authenticate], fundingController.createFunding);
 router.put(`${fundingPath}/:id`, [authenticate], fundingController.updateFunding);
 router.delete(`${fundingPath}/:id`, [authenticate], fundingController.destroyFunding);
+
+
+/**
+ * FUND REQUEST ROUTES
+ * fullPath: api/v1/smes/smeId/fund-requests
+ */
+
+const fundRequestPath = '/:smeId/fund-requests';
+router.get(`${fundRequestPath}`, [authenticate], fundRequestController.fundRequestList);
+router.get(`${fundRequestPath}/:id`, [authenticate], fundRequestController.fundRequestDetail);
+
+router.post(fundRequestPath, [authenticate], fundRequestController.createFundRequest);
+
 
 module.exports = router;
