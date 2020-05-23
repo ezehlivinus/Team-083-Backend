@@ -9,9 +9,9 @@ const fundingSchema = new mongoose.Schema({
     ref: 'Sme'
   },
   capital: {
-    type: String, required: true, minlength: 10, maxlength: 200
+    type: Number, required: true, min: 1
   },
-  founder: {
+  funder: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },

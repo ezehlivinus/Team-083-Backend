@@ -13,7 +13,7 @@ module.exports = function r(app) {
   app.use(express.json());
   app.use(`${basePath}/auth/users`, users);
   app.use(`${basePath}/smes`, smes);
-  // app.use(`${basePath}/smes/:smeId/interests`, funderInterests);
+
 
   // Error middleware
   app.use(error);
