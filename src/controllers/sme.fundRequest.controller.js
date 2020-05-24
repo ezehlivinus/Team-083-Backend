@@ -87,26 +87,42 @@ exports.updateFundRequest = async (req, res) => {
   const funding = await Funding.findOne({ sme: sme._id });
   if (!funding) return res.status(400).send({ status: 'error', message: 'Bad request' });
 
-  if (req.body.amount > funding.balance) return res.status(400).send({ status: 'error', message: 'Insufficient balance' });
-
   //   validate fundRequest
-  const fundRequest = await FundRequest.findById(req.params.id);
-  if (!fundRequest) return res.status(400).send({ status: 'error', message: 'No fund request found' });
+  const previousFundRequest = await FundRequest.findById(req.params.id);
+  if (!previousFundRequest) return res.status(400).send({ status: 'error', message: 'No fund request found' });
 
-  // This continue later from here: when updating making changes to balances is needed
+  // check balance sufficiency
+  if (req.body.amount > funding.balance) {
+    // predict if previous fund request + balance is 
+    // greater than current fund request(updated from form)
+    const predictBalance = funding.balance + previousFundRequest.amount > req.body.amount;
+    if (!predictBalance) return res.status(400).send({ status: 'error', message: 'Insufficient balance' });
+  }
 
-  //   await FundRequest.findByIdAndUpdate(req.params.id, {
-  //     sme: sme._id,
-  //     funder: funder._id,
-  //     capital: req.body.capital,
-  //     origin: req.body.origin,
-  //     _type: req.body._type
-  //   },
-  //   { new: true, useFindAndModify: false }, async (error, funding) => {
-  //     if (error) return res.status(404).send(error);
+  if (req.body.amount <= 0) return res.status(400).send({ status: 'error', message: 'amount should be greater than zero' });
 
-  //     if (!funding) return res.status(404).send({ status: 'error', message: 'funding not found ' });
+  // NOTE
+  // return the previous fund request back to funding
+  // this will be used/done on/during disbursement
+  // funding.balance += previousFundRequest.amount;
+  // await funding.save();
 
-//     res.status(200).send({ status: 'success', data: funding });
-//   });
+  await FundRequest.findByIdAndUpdate(req.params.id, {
+    sme: sme._id,
+    milestone: req.body.milestone,
+    description: req.body.description,
+    amount: req.body.amount
+  },
+  { new: true, useFindAndModify: false }, async (error, newFundRequest) => {
+    if (error) return res.status(404).send(error);
+
+    if (!newFundRequest) return res.status(404).send({ status: 'error', message: 'fund request not found ' });
+
+    // if (error || !newFundRequest ){
+    //   // rollback: NOTE above
+
+    //   return res.send(error);
+    // }
+    res.status(200).send({ status: 'success', data: newFundRequest });
+  });
 };

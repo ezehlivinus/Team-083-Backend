@@ -16,7 +16,7 @@ const fundRequestSchema = new mongoose.Schema({
     type: String, minlength: 10, maxlength: 300
   },
   amount: {
-    type: Number, required: true, min: 1, default: 0
+    type: Number, required: true, min: 1
   }
 }, { timestamps: { currentTime: () => moment().format() } });
 
