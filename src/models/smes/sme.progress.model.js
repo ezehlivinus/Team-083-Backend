@@ -26,6 +26,8 @@ progressSchema.set('toJSON', {
   }
 });
 
-const Progress = mongoose.model('Progress', progressSchema);
+const collectionName = 'progresses';
+
+const Progress = mongoose.model('Progress', progressSchema, collectionName);
 
 exports.Progress = Progress;

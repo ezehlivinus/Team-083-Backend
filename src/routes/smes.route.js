@@ -117,4 +117,26 @@ router.put(`${disbursementPath}/:id`, [authenticate, authorise.isAdmin], disburs
 router.delete(`${disbursementPath}/:id`, [authenticate, authorise.isAdmin], disbursementController.destroyDisbursement);
 
 
+// --------------------------------------------------------------------//
+/**
+ * SME PROGRESS ROUTES
+ * FULL PATH: api/v1/smes/smeId/progresses
+ */
+const progressController = require('../controllers/sme/sme.progress.controller');
+
+const progressPath = '/:smeId/progresses';
+
+router.get(`${progressPath}/:id`, [authenticate], progressController.progressDetail);
+router.get(`${progressPath}`, [authenticate], progressController.progressList);
+/**
+ * {
+ * "description": "some description",
+ * "title": "some title"
+ * }
+ */
+router.post(`${progressPath}`, [authenticate], progressController.createProgress);
+router.put(`${progressPath}/:id`, [authenticate], progressController.updateProgress);
+router.delete(`${progressPath}/:id`, [authenticate], progressController.destroyProgress);
+
+
 module.exports = router;

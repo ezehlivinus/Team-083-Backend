@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const _ = require('lodash');
 const { Funding } = require('../../models/smes/sme.funding.model');
-const { User } = require('../../models/user.model');
 const { Sme } = require('../../models/smes/sme.model');
 const { FundRequest } = require('../../models/smes/sme.fundRequest.model');
 const { Disbursement } = require('../../models/smes/sme.disbursement.model');
@@ -84,8 +83,6 @@ exports.destroyDisbursement = async (req, res) => {
   await funding.save();
 
   res.status(200).send({ status: 'success', data: disbursement });
-
-  res.send('Delete feature not available yet');
 };
 
 
