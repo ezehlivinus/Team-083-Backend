@@ -65,6 +65,7 @@ exports.destroyFundRequest = async (req, res) => {
 //   for now we do not want user to delete fund request,
 // esp. when the fund has been disbursed for request
 // To be implemented
+  return res.send('Delete feature not available yet');
 };
 
 

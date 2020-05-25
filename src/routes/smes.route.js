@@ -96,4 +96,19 @@ router.post(fundRequestPath, [authenticate], fundRequestController.createFundReq
 router.put(`${fundRequestPath}/:id`, [authenticate], fundRequestController.updateFundRequest);
 
 
+// --------------------------------------------------------------------//
+/**
+ * FUND DISBURSEMENT
+ * full path: api/v1/smes/smeId/fund-requests/fundRequestId/disbursements
+ */
+const disbursementController = '';
+const disbursementPath = `${fundRequestPath}/fundRequestId/disbursements`;
+router.get(`${disbursementPath}/:id`, [authenticate], disbursementController.disbursementDetail);
+router.get(disbursementPath, [authenticate], disbursementController.DisbursementList);
+router.post(disbursementPath, [authenticate], disbursementController.createDisbursement);
+router.put(`${disbursementPath}/:id`, [authenticate], disbursementController.updateDisbursement);
+router.delete(`${disbursementPath}/:id`, [authenticate], disbursementController.deleteDisbursement);
+
+
+
 module.exports = router;

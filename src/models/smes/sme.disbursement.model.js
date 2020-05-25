@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 
-
+// Describes fund disbursement, after fund request
 // disbursement schema
 const disbursementSchema = new mongoose.Schema({
   funder: {
