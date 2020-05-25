@@ -11,6 +11,11 @@ const fundingSchema = new mongoose.Schema({
   capital: {
     type: Number, required: true, min: 1
   },
+  // describe how much remain after disbursement, later this feature will be moved as a full model
+  // capital - disbursed.amount = balance
+  balance: {
+    type: Number, required: true
+  },
   funder: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

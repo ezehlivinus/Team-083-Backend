@@ -4,23 +4,28 @@ const router = express.Router();
 const authenticate = require('../middlewares/authenticate');
 const controller = require('../controllers/sme.controller');
 
-const fInterestController = require('../controllers/funder/interest.controller')
+const fInterestController = require('../controllers/funder/interest.controller');
 
 const fundingController = require('../controllers/sme.funding.controller');
 
+const fundRequestController = require('../controllers/sme.fundRequest.controller');
 
 /**
  * Define sme routes, funder-interest routes
  * Using base: /smes
- * fullPath: api/v1/smes
  */
 
 
+// --------------------------------------------------------------------//
+/**
+ * SME ROUTES
+ * fullPath: api/v1/smes
+ */
 router.get('/:id', [authenticate], controller.smeDetail);
 router.get('/', [authenticate], controller.smeList);
 router.delete('/:id', [authenticate], controller.destroySme);
 /**
- * createSme and updatedSme sample data
+ * createSme and updateSme sample data
  * {
  * "name": "Venture Capital",
  * "rc": 1234566865203,
@@ -32,10 +37,11 @@ router.post('/', [authenticate], controller.createSme);
 router.put('/:id', [authenticate], controller.updateSme);
 
 
+// --------------------------------------------------------------------//
 /**
  * FUNDER INTEREST ROUTES
  * fullPath: api/v1/smes/smeId/interests
- * 
+ *
  * There will a be a middleware that will:
  * 1. Only allow founders to view their own interests
  * 2. Only allow funders to view their all their interest
@@ -47,6 +53,8 @@ router.get(`${basePath}/:id`, [authenticate], fInterestController.interestDetail
 router.get(`${basePath}`, [authenticate], fInterestController.interestList);
 router.post(`${basePath}`, [authenticate], fInterestController.createInterest);
 
+
+// --------------------------------------------------------------------//
 
 /**
  * FUNDING INTEREST ROUTES
@@ -67,5 +75,68 @@ router.get(`${fundingPath}`, [authenticate], fundingController.fundingList);
 router.post(fundingPath, [authenticate], fundingController.createFunding);
 router.put(`${fundingPath}/:id`, [authenticate], fundingController.updateFunding);
 router.delete(`${fundingPath}/:id`, [authenticate], fundingController.destroyFunding);
+
+
+// --------------------------------------------------------------------//
+/**
+ * FUND REQUEST ROUTES
+ * fullPath: api/v1/smes/smeId/fund-requests
+ */
+
+const fundRequestPath = '/:smeId/fund-requests';
+router.get(`${fundRequestPath}`, [authenticate], fundRequestController.fundRequestList);
+router.get(`${fundRequestPath}/:id`, [authenticate], fundRequestController.fundRequestDetail);
+// sample data
+// {
+// 	"milestone": "some milestones' title",
+// 	"amount": 3000,
+//  "description": "not compulsory"
+// }
+router.post(fundRequestPath, [authenticate], fundRequestController.createFundRequest);
+router.put(`${fundRequestPath}/:id`, [authenticate], fundRequestController.updateFundRequest);
+
+
+// --------------------------------------------------------------------//
+/**
+ * FUND DISBURSEMENT
+ * full path: api/v1/smes/smeId/fund-requests/fundRequestId/disbursements
+ */
+const disbursementController = require('../controllers/sme/sme.disbursement.controller');
+const authorise = require('../middlewares/authorise');
+
+const disbursementPath = '/:smeId/fund-requests/:fundRequestId/disbursements';
+router.get(`${disbursementPath}/:id`, [authenticate, authorise.isAdmin], disbursementController.disbursementDetail);
+router.get(`${disbursementPath}`, [authenticate, authorise.isAdmin], disbursementController.disbursementList);
+/**
+ * sample data
+ * { "amount": 2000 }
+ * other data are gotten from url
+ */
+router.post(`${disbursementPath}`, [authenticate, authorise.isAdmin], disbursementController.createDisbursement);
+router.put(`${disbursementPath}/:id`, [authenticate, authorise.isAdmin], disbursementController.updateDisbursement);
+router.delete(`${disbursementPath}/:id`, [authenticate, authorise.isAdmin], disbursementController.destroyDisbursement);
+
+
+// --------------------------------------------------------------------//
+/**
+ * SME PROGRESS ROUTES
+ * FULL PATH: api/v1/smes/smeId/progresses
+ */
+const progressController = require('../controllers/sme/sme.progress.controller');
+
+const progressPath = '/:smeId/progresses';
+
+router.get(`${progressPath}/:id`, [authenticate], progressController.progressDetail);
+router.get(`${progressPath}`, [authenticate], progressController.progressList);
+/**
+ * {
+ * "description": "some description",
+ * "title": "some title"
+ * }
+ */
+router.post(`${progressPath}`, [authenticate], progressController.createProgress);
+router.put(`${progressPath}/:id`, [authenticate], progressController.updateProgress);
+router.delete(`${progressPath}/:id`, [authenticate], progressController.destroyProgress);
+
 
 module.exports = router;
