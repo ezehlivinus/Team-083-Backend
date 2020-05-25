@@ -4,10 +4,6 @@ const moment = require('moment');
 // Describes fund disbursement, after fund request
 // disbursement schema
 const disbursementSchema = new mongoose.Schema({
-  funder: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  },
   fundRequest: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'FundRequest'

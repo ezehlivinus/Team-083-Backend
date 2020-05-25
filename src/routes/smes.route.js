@@ -101,14 +101,20 @@ router.put(`${fundRequestPath}/:id`, [authenticate], fundRequestController.updat
  * FUND DISBURSEMENT
  * full path: api/v1/smes/smeId/fund-requests/fundRequestId/disbursements
  */
-const disbursementController = '';
-const disbursementPath = `${fundRequestPath}/fundRequestId/disbursements`;
-router.get(`${disbursementPath}/:id`, [authenticate], disbursementController.disbursementDetail);
-router.get(disbursementPath, [authenticate], disbursementController.DisbursementList);
-router.post(disbursementPath, [authenticate], disbursementController.createDisbursement);
-router.put(`${disbursementPath}/:id`, [authenticate], disbursementController.updateDisbursement);
-router.delete(`${disbursementPath}/:id`, [authenticate], disbursementController.deleteDisbursement);
+const disbursementController = require('../controllers/sme/sme.disbursement.controller');
+const authorise = require('../middlewares/authorise');
 
+const disbursementPath = '/:smeId/fund-requests/:fundRequestId/disbursements';
+router.get(`${disbursementPath}/:id`, [authenticate, authorise.isAdmin], disbursementController.disbursementDetail);
+router.get(`${disbursementPath}`, [authenticate, authorise.isAdmin], disbursementController.disbursementList);
+/**
+ * sample data
+ * { "amount": 2000 }
+ * other data are gotten from url
+ */
+router.post(`${disbursementPath}`, [authenticate, authorise.isAdmin], disbursementController.createDisbursement);
+router.put(`${disbursementPath}/:id`, [authenticate, authorise.isAdmin], disbursementController.updateDisbursement);
+router.delete(`${disbursementPath}/:id`, [authenticate, authorise.isAdmin], disbursementController.destroyDisbursement);
 
 
 module.exports = router;
