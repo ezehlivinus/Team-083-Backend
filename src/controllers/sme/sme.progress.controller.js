@@ -6,6 +6,8 @@ const { Progress } = require('../../models/smes/sme.progress.model');
 
 // retrieved a progress
 exports.progressDetail = async (req, res) => {
+  // A logic would be made later here to restrict view to founders and funder
+
   Progress.findById(req.params.id, (error, progress) => {
     if (error) return res.status(500).send({ status: 'error', message: error.message });
     if (!progress) return res.status(404).send({ status: 'error', message: 'Progress not found' });
@@ -17,6 +19,8 @@ exports.progressDetail = async (req, res) => {
 
 // list all disbursement
 exports.progressList = async (req, res) => {
+  // A logic would be made later here to restrict view to founders and funder
+
   const progresses = await Progress.find();
 
   if (_.isEmpty(progresses)) return res.status(404).send({ status: 'error', message: 'No progress found' });
