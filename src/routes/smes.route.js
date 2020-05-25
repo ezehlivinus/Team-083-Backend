@@ -13,17 +13,19 @@ const fundRequestController = require('../controllers/sme.fundRequest.controller
 /**
  * Define sme routes, funder-interest routes
  * Using base: /smes
- * fullPath: api/v1/smes
  */
 
 
 // --------------------------------------------------------------------//
-
+/**
+ * SME ROUTES
+ * fullPath: api/v1/smes
+ */
 router.get('/:id', [authenticate], controller.smeDetail);
 router.get('/', [authenticate], controller.smeList);
 router.delete('/:id', [authenticate], controller.destroySme);
 /**
- * createSme and updatedSme sample data
+ * createSme and updateSme sample data
  * {
  * "name": "Venture Capital",
  * "rc": 1234566865203,
