@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 
+// In the future we will be able to deduct expense from disbursement
+// If sme spend more disbursement.amount - expense.amount will be in minus
+// This will be redeemed next disbursement
+
 // Describes sme expense
 // expense schema
 const expenseSchema = new mongoose.Schema({
@@ -14,9 +18,11 @@ const expenseSchema = new mongoose.Schema({
   description: {
     type: String, minlength: 5, trim: true
   },
+  //   fund spend during this expense if any
   amount: {
     type: Number
   },
+  // url to or any code/ref to this expense this can be on the description as well
   reference: {
     type: String
   }

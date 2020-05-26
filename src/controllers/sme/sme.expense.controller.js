@@ -1,36 +1,36 @@
 /* eslint-disable no-underscore-dangle */
 const _ = require('lodash');
+const moment = require('moment');
 const { Sme } = require('../../models/smes/sme.model');
-const { Progress } = require('../../models/smes/sme.progress.model');
+const { Expense } = require('../../models/smes/sme.expense.model');
 
-
-// retrieved a progress
-exports.progressDetail = async (req, res) => {
+// retrieved a expense
+exports.expenseDetail = async (req, res) => {
   // A logic would be made later here to restrict view to founders and funder
 
-  Progress.findById(req.params.id, (error, progress) => {
+  Expense.findById(req.params.id, (error, expense) => {
     if (error) return res.status(500).send({ status: 'error', message: error.message });
-    if (!progress) return res.status(404).send({ status: 'error', message: 'Progress not found' });
+    if (!expense) return res.status(404).send({ status: 'error', message: 'Expense not found' });
 
-    res.status(200).send({ status: 'success', data: progress });
+    res.status(200).send({ status: 'success', data: expense });
   }).populate('sme');
 };
 
 
 // list all expense
-exports.progressList = async (req, res) => {
+exports.expenseList = async (req, res) => {
   // A logic would be made later here to restrict view to founders and funder
 
-  const progresses = await Progress.find();
+  const expenses = await Expense.find();
 
-  if (_.isEmpty(progresses)) return res.status(404).send({ status: 'error', message: 'No progress found' });
+  if (_.isEmpty(expenses)) return res.status(404).send({ status: 'error', message: 'No expense found' });
 
-  res.status(200).send({ status: 'success', data: progresses });
+  res.status(200).send({ status: 'success', data: expenses });
 };
 
 
-// Create a progress
-exports.createProgress = async (req, res) => {
+// Create a expense
+exports.createExpense = async (req, res) => {
   // validate request body: to be done later, clean some code up
 
   // validate sme
@@ -38,24 +38,26 @@ exports.createProgress = async (req, res) => {
   if (!sme) return res.status(404).send({ status: 'error', message: 'Sme not found' });
   if (!sme.isVerified && !sme.isSuspended) return res.status(404).send({ status: 'error', message: `Sme is not verified or is suspended ${sme.isSuspended}` });
 
+  if (req.body.amount <= 0) return res.status(400).send({ status: 'error', message: 'amount too low' });
+
   //   validate actor(user/founder)
   const notFounder = !sme.founders.includes(req.user._id);
   if (notFounder) return res.status(400).send({ status: 'error', message: `Access denied...you are not a founder of ${sme.name}` });
 
-  //  save sme progress
-  const progress = new Progress({
+  //  save sme expense
+  const expense = new Expense({
     sme: sme._id,
     ...req.body
   });
 
-  await progress.save();
+  await expense.save();
 
-  res.status(201).send({ status: 'success', data: progress });
+  res.status(201).send({ status: 'success', data: expense });
 };
 
 
-// Delete a progress
-exports.destroyProgress = async (req, res) => {
+// Delete a expense
+exports.destroyExpense = async (req, res) => {
   // validate sme
   const sme = await Sme.findById(req.params.smeId);
   if (!sme) return res.status(404).send({ status: 'error', message: 'Sme not found' });
@@ -65,15 +67,15 @@ exports.destroyProgress = async (req, res) => {
   const notFounder = !sme.founders.includes(req.user._id);
   if (notFounder) return res.status(400).send({ status: 'error', message: `Access denied...you are not a founder of ${sme.name}` });
 
-  const progress = await Progress.findByIdAndRemove(req.params.id);
-  if (!progress) return res.status(404).send('Progress not found');
+  const expense = await Expense.findByIdAndRemove(req.params.id);
+  if (!expense) return res.status(404).send('Expense not found');
 
-  res.status(200).send({ status: 'success', data: progress });
+  res.status(200).send({ status: 'success', data: expense });
 };
 
 
-// Update  a progress
-exports.updateProgress = async (req, res) => {
+// Update  a expense
+exports.updateExpense = async (req, res) => {
 // validate request body: to be done later, clean some code up
 
   // validate sme
@@ -85,14 +87,19 @@ exports.updateProgress = async (req, res) => {
   const notFounder = !sme.founders.includes(req.user._id);
   if (notFounder) return res.status(400).send({ status: 'error', message: `Access denied...you are not a founder of ${sme.name}` });
 
-  // validate progress
-  const progress = await Progress.findById(req.params.id);
-  if (!progress) return res.status(404).send({ status: 'error', message: 'Progress not found' });
+  // validate expense
+  const expense = await Expense.findById(req.params.id);
+  if (!expense) return res.status(404).send({ status: 'error', message: 'Expense not found' });
 
-  progress.title = req.body.title;
-  progress.description = req.body.description;
 
-  await progress.save();
+  expense.title = req.body.title;
+  expense.description = req.body.description;
+  expense.amount = req.body.amount;
+  expense.reference = req.body.reference;
+  expense.sme = sme._id;
+  expense.updatedAt = moment().format();
 
-  res.status(200).send({ status: 'success', data: progress });
+  await expense.save();
+
+  res.status(200).send({ status: 'success', data: expense });
 };
