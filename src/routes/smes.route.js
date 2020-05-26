@@ -138,5 +138,28 @@ router.post(`${progressPath}`, [authenticate], progressController.createProgress
 router.put(`${progressPath}/:id`, [authenticate], progressController.updateProgress);
 router.delete(`${progressPath}/:id`, [authenticate], progressController.destroyProgress);
 
+// --------------------------------------------------------------------//
+/**
+ * SME EXPENSE ROUTES
+ * FULL PATH: api/v1/smes/smeId/expenses
+ */
+const expenseController = require('../controllers/sme/sme.expense.controller');
+
+const expensePath = '/:smeId/expenses';
+
+router.get(`${expensePath}`, [authenticate], expenseController.expenseList);
+router.get(`${expensePath}/:id`, [authenticate], expenseController.expenseDetail);
+/**
+ * {
+ * "title": "Expense title changed",
+ * "description": "if any changed",
+ * "amount": 1000,
+ * "reference": "Changed url or any code/ref to this expense this can be on the description as well"
+ * }
+ */
+router.post(`${expensePath}`, [authenticate], expenseController.createExpense);
+router.put(`${expensePath}/:id`, [authenticate], expenseController.updateExpense);
+router.delete(`${expensePath}/:id`, [authenticate], expenseController.destroyExpense);
+
 
 module.exports = router;
