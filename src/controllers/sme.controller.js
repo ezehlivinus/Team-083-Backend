@@ -89,3 +89,21 @@ exports.updateSme = async (req, res) => {
       res.status(200).send({ status: 'Success', data: sme });
     });
 };
+
+// validates that this sme is in compliance with the system policy
+exports.auditSme = async (req, res) => {
+ 
+  // validate sme
+  const sme = await Sme.findById(req.params.smeId);
+  if (!sme) return res.status(404).send({ status: 'error', message: 'sme  not found' });
+
+  if (!sme.rc) return res.status(404).send({ status: 'error', message: 'Provide sme rc number' });
+
+  // we are interested on this two field only
+  sme.isVerified = req.body.isVerified;
+  sme.isSuspended = req.body.isSuspended;
+ 
+  await sme.save();
+
+  res.status(200).send({ status: 'success', data: sme });
+};
