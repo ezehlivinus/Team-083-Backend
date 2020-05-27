@@ -18,7 +18,7 @@ const smeSchema = new mongoose.Schema({
     }
   ],
   ask: { type: Number, required: true, default: 0 },
-  // RC (may be means: Registered Company), is a business registration number
+  // RC (may mean: Registered Company), is a business registration number
   rc: { type: Number, required: true, unique: true },
   isSuspended: {
     type: Boolean,
@@ -41,8 +41,8 @@ smeSchema.set('toJSON', {
   versionKey: false, // excludes the __v
   transform(doc, ret) {
     // these does not need to be returned on response
-    delete ret.isSuspended;
-    delete ret.isVerified;
+    // delete ret.isSuspended;
+    // delete ret.isVerified;
   }
 });
 

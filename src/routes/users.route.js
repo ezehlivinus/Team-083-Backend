@@ -10,6 +10,7 @@ const controller = require('../controllers/user.controller');
  * Using base: auth/users
  */
 
+
 router.get('/:id', [authenticate], controller.userDetail);
 router.get('/', [authenticate], controller.userList);
 // upon registration all users are of type user, except admin whose case will be treated later

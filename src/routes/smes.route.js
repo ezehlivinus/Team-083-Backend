@@ -2,9 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 const authenticate = require('../middlewares/authenticate');
-const controller = require('../controllers/sme.controller');
+const smeController = require('../controllers/sme.controller');
 
-const fInterestController = require('../controllers/funder/interest.controller');
+const interestController = require('../controllers/funder/interest.controller');
 
 const fundingController = require('../controllers/sme.funding.controller');
 
@@ -21,9 +21,9 @@ const fundRequestController = require('../controllers/sme.fundRequest.controller
  * SME ROUTES
  * fullPath: api/v1/smes
  */
-router.get('/:id', [authenticate], controller.smeDetail);
-router.get('/', [authenticate], controller.smeList);
-router.delete('/:id', [authenticate], controller.destroySme);
+router.get('/:id', [authenticate], smeController.smeDetail);
+router.get('/', [authenticate], smeController.smeList);
+router.delete('/:id', [authenticate], smeController.destroySme);
 /**
  * createSme and updateSme sample data
  * {
@@ -33,8 +33,8 @@ router.delete('/:id', [authenticate], controller.destroySme);
  * "categories": ["tech", "AI", "ML"]
  * }
  */
-router.post('/', [authenticate], controller.createSme);
-router.put('/:id', [authenticate], controller.updateSme);
+router.post('/', [authenticate], smeController.createSme);
+router.put('/:id', [authenticate], smeController.updateSme);
 
 
 // --------------------------------------------------------------------//
@@ -49,9 +49,9 @@ router.put('/:id', [authenticate], controller.updateSme);
 
 const basePath = '/:smeId/interests';
 
-router.get(`${basePath}/:id`, [authenticate], fInterestController.interestDetail);
-router.get(`${basePath}`, [authenticate], fInterestController.interestList);
-router.post(`${basePath}`, [authenticate], fInterestController.createInterest);
+router.get(`${basePath}/:id`, [authenticate], interestController.interestDetail);
+router.get(`${basePath}`, [authenticate], interestController.interestList);
+router.post(`${basePath}`, [authenticate], interestController.createInterest);
 
 
 // --------------------------------------------------------------------//
@@ -160,6 +160,20 @@ router.get(`${expensePath}/:id`, [authenticate], expenseController.expenseDetail
 router.post(`${expensePath}`, [authenticate], expenseController.createExpense);
 router.put(`${expensePath}/:id`, [authenticate], expenseController.updateExpense);
 router.delete(`${expensePath}/:id`, [authenticate], expenseController.destroyExpense);
+
+
+// --------------------------------------------------------------------//
+/**
+ * SME VERIFICATION/AUDITION ROUTES
+ * FULL PATH: api/v1/smes/smeId/verification
+ * makes use of sme.controller.js
+ */
+
+/**
+ * sample data
+ * { "isVerified": true, "isSuspended": false }
+ */
+router.put('/:smeId/audits', [authenticate, authorise.isAdmin], smeController.auditSme);
 
 
 module.exports = router;
